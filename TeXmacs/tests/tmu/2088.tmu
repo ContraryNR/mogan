@@ -1,0 +1,39 @@
+<TMU|<tuple|1.1.0|2026.2.5>>
+
+<style|<tuple|generic|chinese|number-europe>>
+
+<\body>
+  <doc-data|<doc-title|2088: 文档元数据 QML 重构测试>|<doc-author|<author-data|<author-name|Mogan Tester>>>|<doc-subject|QML refactoring>>
+
+  本文档用于验证文档元数据 QML 弹窗。文档已预置元数据：
+
+  <\itemize>
+    <item>Title: 2088: 文档元数据 QML 重构测试
+
+    <item>Author: Mogan Tester
+
+    <item>Subject: QML refactoring
+  </itemize>
+
+  操作步骤：
+
+  1. 菜单 文档 → 元数据（Document → Metadata），应弹出 QML 对话框
+  （\PDialogShell\R 外壳，圆角透明背景）。
+
+  2. 三个文本输入框应分别显示上述 Title / Author / Subject 的当前值。
+
+  3. 修改任一字段，点 \PReset\R：三个字段恢复系统默认值（弹窗内立即刷新，
+  不关闭）。Title 默认值回退到文件名 \P2088\R。
+
+  4. 点窗口关闭按钮（\PX\R）：放弃改动；重新打开弹窗，字段保持原值。
+
+  5. 修改字段后点 \POK\R：写回 global-title / global-author / global-subject
+  init 环境变量。重新打开弹窗，字段显示新值。
+</body>
+
+<\initial>
+  <\collection>
+    <associate|page-medium|paper>
+    <associate|page-screen-margin|false>
+  </collection>
+</initial>
