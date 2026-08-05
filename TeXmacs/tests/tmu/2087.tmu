@@ -1,0 +1,32 @@
+<TMU|<tuple|1.1.0|2026.2.5>>
+
+<style|<tuple|generic|chinese>>
+
+<\body>
+  Test 2087: 视图 → 高分屏设置 采用 QML 重构
+
+  本文档用于验证高分屏设置 QML 弹窗。操作步骤：
+
+  1. 菜单 视图 → 高分屏设置（macOS 为 Retina settings），应弹出 QML 对话框。
+
+  2. macOS：弹窗显示 \PUse retina fonts:\R 开关；非 macOS：显示
+  \PDouble the zoom factor for TeXmacs documents:\R 与 \PUse high resolution
+  icons:\R 两个开关。
+
+  3. 当 \Pgui theme\R 偏好非空时，额外显示 \PScale graphical interface:\R
+  （macOS）或 \PScale of the graphical user interface:\R（非 macOS）枚举字段，
+  选项为 1 / 1.2 / 1.5 / 2 / 自定义。
+
+  4. 点 \PReset\R：字段回到系统默认值（弹窗内立即刷新，不关闭）。
+
+  5. 点 \PCancel\R 或关窗：放弃改动，不写回偏好。
+
+  6. 点 \POK\R：写回偏好并提示重启 MoganSTEM 使设置生效。
+</body>
+
+<\initial>
+  <\collection>
+    <associate|page-medium|paper>
+    <associate|page-screen-margin|false>
+  </collection>
+</initial>
