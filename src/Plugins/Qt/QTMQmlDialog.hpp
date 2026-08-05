@@ -187,6 +187,18 @@ tree cpp_paragraph_format_dialog (int specs_key);
 void cpp_statistics_dialog (string title, tree items);
 
 /**
+ * @brief 文档元数据 QML 对话框的 glue 入口（一次性提交）。
+ * @param fields scm 构造的字段表（text 类型），须经 stree->tree 转换。
+ * @return OK 返回 (tuple (tuple key value)...)；Reset 返回 (tuple "reset")；
+ * 关闭 / 加载失败返回空 tree。
+ * @details 走 run_qml_dialog（exec 阻塞模态，元数据无需 live 重绘）。字段为
+ * text 类型（Title / Author / Subject），value 为字符串。Reset 走 choose(2)
+ * 退出码，Scheme 侧收到 "reset" 标记后调 initial-default 重置并重调本入口。
+ * 测试钩子 MOGAN_TEST_DOCUMENT_METADATA=ok|cancel|reset。
+ */
+tree cpp_document_metadata_dialog (tree fields);
+
+/**
  * @brief 显示版本 QML 对话框。
  *
  * @param title 已翻译的对话框标题。

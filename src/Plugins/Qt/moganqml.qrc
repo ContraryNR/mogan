@@ -22,5 +22,6 @@
         <file>qml/Statistics.qml</file>
         <file>qml/Preferences.qml</file>
         <file>qml/Version.qml</file>
+        <file>qml/DocumentMetadata.qml</file>
     </qresource>
 </RCC>

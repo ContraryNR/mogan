@@ -556,6 +556,84 @@ cpp_statistics_dialog (string title, tree items) {
       380, 300);
 }
 
+// ---- 文档元数据 ------------------------------------------------------------
+
+/**
+ * @brief 文档元数据 QML 对话框的 glue 入口（见 QTMQmlDialog.hpp）。
+ *
+ * @details 走 run_qml_dialog（exec 阻塞模态，元数据无需 live 重绘）。字段为
+ * text 类型（Title / Author / Subject），复用 field_tree_to_qml 解析。
+ * 退出码映射：2=Reset → 返回 "reset" 标记；Accepted(1)=OK → 返回结果；
+ * 其余(0/-1)=关闭 → 返回空 tree。测试钩子
+ * MOGAN_TEST_DOCUMENT_METADATA=ok|cancel|reset。
+ */
+tree
+cpp_document_metadata_dialog (tree fields) {
+  string preset= get_env ("MOGAN_TEST_DOCUMENT_METADATA");
+  if (preset == "cancel") return tree (TUPLE);
+  if (preset == "reset") {
+    tree r (TUPLE);
+    r << tree ("reset");
+    return r;
+  }
+  if (preset == "ok") {
+    tree r (TUPLE);
+    if (is_compound (fields)) {
+      for (int i= 0; i < N (fields); i++) {
+        QVariantMap m= field_tree_to_qml (fields[i]);
+        if (m.isEmpty ()) continue;
+        tree kv (TUPLE);
+        kv << tree (from_qstring (m.value ("key").toString ()))
+           << tree (from_qstring (m.value ("value").toString ()));
+        r << kv;
+      }
+    }
+    return r;
+  }
+  QVariantList qmlFields;
+  if (is_compound (fields)) {
+    for (int i= 0; i < N (fields); i++) {
+      if (is_compound (fields[i])) {
+        QVariantMap m= field_tree_to_qml (fields[i]);
+        if (!m.isEmpty ()) qmlFields << m;
+      }
+    }
+  }
+  array<string> buttons   = {string ("OK"), string ("Reset")};
+  const int     fieldCount= qmlFields.size ();
+  const int     logicH    = 24 * 2 + fieldCount * (44 + 12) + 64;
+
+  QmlDialogBridge* bridge= nullptr;
+  int              choice= run_qml_dialog (
+      "qrc:/qml/DocumentMetadata.qml", "DocumentMetadata.qml",
+      [&] (QQuickWidget* qw, QDialog& host) {
+        bridge= inject_common_context (qw, host);
+        qw->rootContext ()->setContextProperty ("metadataFields", qmlFields);
+        qw->rootContext ()->setContextProperty ("dialogButtons",
+                                                             translate_buttons (buttons));
+      },
+      420, logicH);
+
+  // 退出码映射：2=Reset → 返回 "reset" 标记；Accepted(1)=OK → 返回结果；
+  // 其余(0/-1)=关闭 → 返回空 tree。
+  if (choice == 2) {
+    delete bridge;
+    tree r (TUPLE);
+    r << tree ("reset");
+    return r;
+  }
+  tree               r (TUPLE);
+  const QVariantMap& res= bridge ? bridge->results () : QVariantMap ();
+  delete bridge;
+  for (auto it= res.begin (); it != res.end (); ++it) {
+    tree kv (TUPLE);
+    kv << tree (from_qstring (it.key ()));
+    kv << tree (from_qstring (it.value ().toString ()));
+    r << kv;
+  }
+  return r;
+}
+
 bool
 cpp_version_dialog (string title, string message) {
   string preset= get_env ("MOGAN_TEST_VERSION_DIALOG");

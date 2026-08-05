@@ -84,6 +84,14 @@ function main()
                 }
             },
             {
+                scm_name = "cpp-document-metadata-dialog",
+                cpp_name = "cpp_document_metadata_dialog",
+                ret_type = "tree",
+                arg_list = {
+                    "tree"
+                }
+            },
+            {
                 scm_name = "cpp-version-dialog",
                 cpp_name = "cpp_version_dialog",
                 ret_type = "bool",

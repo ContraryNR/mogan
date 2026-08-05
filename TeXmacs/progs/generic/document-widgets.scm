@@ -1432,58 +1432,54 @@
 ;; Document -> Metadata
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(tm-widget ((document-metadata-editor u) quit)
-  (padded (refreshable "document-metadata"
-            (aligned (item (text "Title:")
-                       (input (initial-set u "global-title" answer)
-                         "string"
-                         (list (buffer-get-metadata u "title"))
-                         "24em"
-                       ) ;input
-                     ) ;item
-              (item (text "Author:")
-                (input (initial-set u "global-author" answer)
-                  "string"
-                  (list (buffer-get-metadata u "author"))
-                  "24em"
-                ) ;input
-              ) ;item
-              (item (text "Subject:")
-                (input (initial-set u "global-subject" answer)
-                  "string"
-                  (list (buffer-get-metadata u "subject"))
-                  "24em"
-                ) ;input
-              ) ;item
-            ) ;aligned
-          ) ;refreshable
-    ======
-    (explicit-buttons (hlist >>>
-                       ("Reset"
-                         (initial-default u "global-title" "global-author" "global-subject")
-                         (refresh-now "document-metadata")
-                       ) ;
-                       //
-                       //
-                       ("Ok" (quit))
-                      ) ;hlist
-    ) ;explicit-buttons
-  ) ;padded
-) ;tm-widget
+;; 元数据字段表构造：三个 text 字段（Title / Author / Subject）。
+;; text 字段用空串占位 options（field_tree_to_qml 跳过非 compound 的 options）；
+;; value 为字符串，由 buffer-get-metadata 读取（含 doc-data / 文件名兜底）。
+
+(define (document-metadata-form-tree u)
+  `(form (text ,(translate "Title:")
+           ,(pref-global-title)
+           ,""
+           ,(buffer-get-metadata u "title"))
+     (text ,(translate "Author:")
+       ,(pref-global-author)
+       ,""
+       ,(buffer-get-metadata u "author"))
+     (text ,(translate "Subject:")
+       ,(pref-global-subject)
+       ,""
+       ,(buffer-get-metadata u "subject")))
+) ;define
 
 (tm-define (open-document-metadata-window)
   (:interactive #t)
-  (let* ((u (current-buffer)))
-    (dialogue-window (document-metadata-editor u) noop "Document metadata")
-  ) ;let*
+  (let ((u (current-buffer)))
+    (let loop
+      ()
+      (with result
+        (cpp-document-metadata-dialog (stree->tree (document-metadata-form-tree u)))
+        (with stree
+          (tree->stree result)
+          (cond ((null? (cdr stree)) (void))
+                ((string? (cadr stree))
+                 (initial-default u
+                   (pref-global-title)
+                   (pref-global-author)
+                   (pref-global-subject)
+                 ) ;initial-default
+                 (loop)
+                ) ;
+                (else (for-each (lambda (kv) (initial-set u (cadr kv) (caddr kv))) (cdr stree)))
+          ) ;cond
+        ) ;with
+      ) ;with
+    ) ;let
+  ) ;let
 ) ;tm-define
 
 (tm-define (open-document-metadata)
   (:interactive #t)
-  (if (side-tools?)
-    (tool-select :right 'document-metadata-tool)
-    (open-document-metadata-window)
-  ) ;if
+  (open-document-metadata-window)
 ) ;tm-define
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

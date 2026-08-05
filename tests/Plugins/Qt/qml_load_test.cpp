@@ -206,6 +206,7 @@ private slots:
   void test_version_loads ();
   void test_version_escape_cancels ();
   void test_statistics_loads ();
+  void test_document_metadata_loads ();
 };
 
 // 共用：构造带 closeBridge/dpScale/isDark 的 QQuickWidget，加载给定 qrc url。
@@ -352,6 +353,48 @@ TestQmlLoad::test_statistics_loads () {
   qw->rootContext ()->setContextProperty ("statsItems", model);
   qw->rootContext ()->setContextProperty ("dialogButtons", buttons);
   qw->setSource (QUrl ("qrc:/qml/Statistics.qml"));
+  QCOMPARE (qw->status (), QQuickWidget::Ready);
+}
+
+void
+TestQmlLoad::test_document_metadata_loads () {
+  // DocumentMetadata 需 metadataFields/dialogButtons；注入三个 text 字段桩。
+  QVariantList fields;
+  QVariantMap  titleField;
+  titleField["type"] = QString ("text");
+  titleField["label"]= QString ("Title:");
+  titleField["key"]  = QString ("global-title");
+  titleField["value"]= QString ("Test document");
+  fields << titleField;
+
+  QVariantMap authorField;
+  authorField["type"] = QString ("text");
+  authorField["label"]= QString ("Author:");
+  authorField["key"]  = QString ("global-author");
+  authorField["value"]= QString ("Anonymous");
+  fields << authorField;
+
+  QVariantMap subjectField;
+  subjectField["type"] = QString ("text");
+  subjectField["label"]= QString ("Subject:");
+  subjectField["key"]  = QString ("global-subject");
+  subjectField["value"]= QString ("");
+  fields << subjectField;
+
+  QStringList buttons;
+  buttons << "OK"
+          << "Reset";
+
+  QDialog       host;
+  QQuickWidget* qw= new QQuickWidget (&host);
+  qw->setResizeMode (QQuickWidget::SizeRootObjectToView);
+  StubBridge* bridge= new StubBridge (qw);
+  qw->rootContext ()->setContextProperty ("closeBridge", bridge);
+  qw->rootContext ()->setContextProperty ("dpScale", 1.0);
+  qw->rootContext ()->setContextProperty ("isDark", false);
+  qw->rootContext ()->setContextProperty ("metadataFields", fields);
+  qw->rootContext ()->setContextProperty ("dialogButtons", buttons);
+  qw->setSource (QUrl ("qrc:/qml/DocumentMetadata.qml"));
   QCOMPARE (qw->status (), QQuickWidget::Ready);
 }
 

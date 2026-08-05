@@ -47,6 +47,18 @@
 (define-public (pref-font-effects) "font-effects")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Document metadata（文档 → 元数据）
+;; 权威定义：document-widgets.scm 的 open-document-metadata-window +
+;; edit_main.cpp 的 get_metadata 读写 global-<kind> init 环境变量。
+;; global-title / global-author / global-subject 为文档元数据三字段，
+;; 值为字符串；Reset 走 init-default 恢复默认。
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-public (pref-global-title) "global-title")
+(define-public (pref-global-author) "global-author")
+(define-public (pref-global-subject) "global-subject")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ParagraphFormat（格式 → 段落 / 文档 → 段落）
 ;; 权威定义：paragraph-format-widgets.scm 的 paragraph-basic-fields /
 ;; paragraph-advanced-fields 的 specs builder（get-env / get-init 读写）。

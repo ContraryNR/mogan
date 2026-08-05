@@ -28,15 +28,6 @@
   ) ;with
 ) ;tm-tool*
 
-(tm-tool* (document-metadata-tool win)
-  (:name "Document metadata")
-  (with u
-    (current-buffer)
-    (dynamic ((document-metadata-editor u) (tool-quit 'document-metadata-tool #f win))
-    ) ;dynamic
-  ) ;with
-) ;tm-tool*
-
 (tm-tool* (document-colors-tool win)
   (:name "Document colors")
   (with u
