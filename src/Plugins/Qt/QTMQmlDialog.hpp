@@ -148,6 +148,23 @@ string cpp_confirm_restart (string title, string message);
 tree cpp_form_dialog (tree fields);
 
 /**
+ * @brief 高分屏设置 QML 对话框的 glue 入口。
+ * @param fields scm
+ * 构造的字段表（toggle/enum），须经 stree->tree 转换。
+ * @return OK 返回
+ * (tuple (tuple key value)...)；Reset 返回 (tuple "reset")；
+ * Cancel / 关闭 /
+ * 加载失败返回空 tree。
+ * @details 走 run_qml_dialog（exec 阻塞模态）。字段含
+ * toggle（value "on"/"off"）
+ * 和 enum（缩放比例）。Reset 走 choose(2)
+ * 退出码，Scheme 侧收到 "reset" 标记后
+ * 重置偏好并重调本入口。测试钩子
+ * MOGAN_TEST_RETINA_SETTINGS=ok|cancel|reset。
+ */
+tree cpp_retina_settings_dialog (tree fields);
+
+/**
  * @brief 字体选择器 QML 对话框的 glue 入口。
  * @param specs_key scheme specs-registry 的 int 句柄
  *（font-selector-register-specs 返回值）。

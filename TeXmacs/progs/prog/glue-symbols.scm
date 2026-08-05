@@ -730,6 +730,7 @@
     "cpp-confirm-close"
     "cpp-confirm-restart"
     "cpp-form-dialog"
+    "cpp-retina-settings-dialog"
     "cpp-font-selector-dialog"
     "cpp-paragraph-format-dialog"
     "cpp-preferences-dialog"

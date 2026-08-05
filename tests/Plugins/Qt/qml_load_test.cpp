@@ -206,6 +206,7 @@ private slots:
   void test_version_loads ();
   void test_version_escape_cancels ();
   void test_statistics_loads ();
+  void test_retina_settings_loads ();
 };
 
 // 共用：构造带 closeBridge/dpScale/isDark 的 QQuickWidget，加载给定 qrc url。
@@ -352,6 +353,45 @@ TestQmlLoad::test_statistics_loads () {
   qw->rootContext ()->setContextProperty ("statsItems", model);
   qw->rootContext ()->setContextProperty ("dialogButtons", buttons);
   qw->setSource (QUrl ("qrc:/qml/Statistics.qml"));
+  QCOMPARE (qw->status (), QQuickWidget::Ready);
+}
+
+void
+TestQmlLoad::test_retina_settings_loads () {
+  // RetinaSettings 需 retinaFields/dialogButtons；注入 toggle + enum 字段桩。
+  QVariantList fields;
+  QVariantMap  toggleField;
+  toggleField["type"] = QString ("toggle");
+  toggleField["label"]= QString ("Use retina fonts:");
+  toggleField["key"]  = QString ("retina-factor");
+  toggleField["value"]= QString ("off");
+  fields << toggleField;
+
+  QVariantMap enumField;
+  enumField["type"] = QString ("enum");
+  enumField["label"]= QString ("Scale graphical interface:");
+  enumField["key"]  = QString ("retina-scale");
+  enumField["options"]=
+      QStringList{QString ("1"), QString ("1.2"), QString ("1.5"),
+                  QString ("2"), QString ("")};
+  enumField["value"]= QString ("1");
+  fields << enumField;
+
+  QStringList buttons;
+  buttons << "OK"
+          << "Reset"
+          << "Cancel";
+
+  QDialog       host;
+  QQuickWidget* qw= new QQuickWidget (&host);
+  qw->setResizeMode (QQuickWidget::SizeRootObjectToView);
+  StubBridge* bridge= new StubBridge (qw);
+  qw->rootContext ()->setContextProperty ("closeBridge", bridge);
+  qw->rootContext ()->setContextProperty ("dpScale", 1.0);
+  qw->rootContext ()->setContextProperty ("isDark", false);
+  qw->rootContext ()->setContextProperty ("retinaFields", fields);
+  qw->rootContext ()->setContextProperty ("dialogButtons", buttons);
+  qw->setSource (QUrl ("qrc:/qml/RetinaSettings.qml"));
   QCOMPARE (qw->status (), QQuickWidget::Ready);
 }
 

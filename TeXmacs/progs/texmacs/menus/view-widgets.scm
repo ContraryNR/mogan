@@ -55,72 +55,67 @@
   (reset-preference "retina-scale")
 ) ;tm-define
 
-(tm-widget (retina-settings-widget cmd)
-  (centered (assuming (and (os-macos?) (qt-gui?))
-              (centered (aligned (item (text "Use retina fonts:")
-                                   (toggle (set-retina-boolean-preference "retina-factor" answer)
-                                     (get-retina-boolean-preference "retina-factor")
-                                   ) ;toggle
-                                 ) ;item
-                          (assuming (!= (get-preference "gui theme") "")
-                            (item (text "Scale graphical interface:")
-                              (enum (set-retina-preference "retina-scale" answer)
-                                '("1" "1.2" "1.5" "2" "")
-                                (get-retina-preference "retina-scale")
-                                "5em"
-                              ) ;enum
-                            ) ;item
-                          ) ;assuming
-                        ) ;aligned
-              ) ;centered
-            ) ;assuming
-    (assuming (not (os-macos?))
-      (centered (aligned (item (text "Double the zoom factor for TeXmacs documents:")
-                           (toggle (set-retina-boolean-preference "retina-zoom" answer)
-                             (get-retina-boolean-preference "retina-zoom")
-                           ) ;toggle
-                         ) ;item
-                  (item (text "Use high resolution icons:")
-                    (toggle (set-retina-boolean-preference "retina-icons" answer)
-                      (get-retina-boolean-preference "retina-icons")
-                    ) ;toggle
-                  ) ;item
-                  (assuming (!= (get-preference "gui theme") "")
-                    (item (text "Scale of the graphical user interface:")
-                      (enum (set-retina-preference "retina-scale" answer)
-                        '("1" "1.2" "1.5" "2" "")
-                        (get-retina-preference "retina-scale")
-                        "5em"
-                      ) ;enum
-                    ) ;item
-                  ) ;assuming
-                ) ;aligned
-      ) ;centered
-    ) ;assuming
-    ===
-    ===
-    (bottom-buttons ("Cancel" (cmd "cancel"))
-      >>
-      ("Reset" (begin (reset-retina-preferences) (cmd "ok")))
-      //
-      //
-      ("Ok" (cmd "ok"))
-    ) ;bottom-buttons
-  ) ;centered
-) ;tm-widget
+;; 高分屏设置字段表构造（平台分支 + gui theme 条件）。
+;; toggle 字段用空串占位 options（field_tree_to_qml 跳过非 compound 的 options）；
+;; enum 字段带选项列表。value 统一 string：toggle 为 "on"/"off"，enum 为 "1"/... 。
+
+(define (retina-settings-form-tree)
+  (let ((scale-opts '("1" "1.2" "1.5" "2" "")))
+    (if (os-macos?)
+      `(form (toggle ,(translate "Use retina fonts:")
+               ,(pref-retina-factor)
+               ,""
+               ,(if (get-retina-boolean-preference (pref-retina-factor))
+                  "on"
+                  "off"))
+         ,@(if (!= (get-preference "gui theme") "")
+             `((enum ,(translate "Scale graphical interface:")
+                 ,(pref-retina-scale)
+                 ,scale-opts
+                 ,(get-retina-preference (pref-retina-scale))))
+             '()))
+      `(form (toggle ,(translate "Double the zoom factor for TeXmacs documents:")
+               ,(pref-retina-zoom)
+               ,""
+               ,(if (get-retina-boolean-preference (pref-retina-zoom))
+                  "on"
+                  "off"))
+         (toggle ,(translate "Use high resolution icons:")
+           ,(pref-retina-icons)
+           ,""
+           ,(if (get-retina-boolean-preference (pref-retina-icons)) "on" "off"))
+         ,@(if (!= (get-preference "gui theme") "")
+             `((enum ,(translate "Scale of the graphical user interface:")
+                 ,(pref-retina-scale)
+                 ,scale-opts
+                 ,(get-retina-preference (pref-retina-scale))))
+             '()))
+    ) ;if
+  ) ;let
+) ;define
 
 (tm-define (open-retina-settings-window)
   (:interactive #t)
-  (dialogue-window retina-settings-widget
-    (lambda (answer) (when (== answer "ok") (notify-restart)))
-    (if (os-macos?) "Retina screen settings" "High resolution screen settings")
-  ) ;dialogue-window
+  (let loop
+    ()
+    (with result
+      (cpp-retina-settings-dialog (stree->tree (retina-settings-form-tree)))
+      (with stree
+        (tree->stree result)
+        (cond ((null? (cdr stree)) (void))
+              ((string? (cadr stree)) (reset-retina-preferences) (loop))
+              (else (for-each (lambda (kv) (set-retina-preference (cadr kv) (caddr kv)))
+                      (cdr stree)
+                    ) ;for-each
+                (notify-restart)
+              ) ;else
+        ) ;cond
+      ) ;with
+    ) ;with
+  ) ;let
 ) ;tm-define
 
 (tm-define (open-retina-settings)
   (:interactive #t)
-  (if (side-tools?)
-    (tool-select :right 'retina-settings-tool)
-    (open-retina-settings-window)
-  ) ;if
+  (open-retina-settings-window)
 ) ;tm-define

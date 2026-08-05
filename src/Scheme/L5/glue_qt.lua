@@ -59,6 +59,14 @@ function main()
                 }
             },
             {
+                scm_name = "cpp-retina-settings-dialog",
+                cpp_name = "cpp_retina_settings_dialog",
+                ret_type = "tree",
+                arg_list = {
+                    "tree"
+                }
+            },
+            {
                 scm_name = "cpp-font-selector-dialog",
                 cpp_name = "cpp_font_selector_dialog",
                 ret_type = "tree",

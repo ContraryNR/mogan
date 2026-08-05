@@ -47,6 +47,20 @@
 (define-public (pref-font-effects) "font-effects")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Retina settings（视图 → 高分屏设置）
+;; 权威定义：view-widgets.scm 的 get/set-retina-preference +
+;; qt_gui.cpp 启动时读取这四个 key 填充 C++ 全局 retina_* 变量。
+;; retina-factor 为 macOS 字体高分屏开关；retina-zoom / retina-icons 为
+;; 非 macOS 的文档缩放 / 图标高分屏开关（均 "on"/"off"）；
+;; retina-scale 为界面缩放比例（"1"/"1.2"/"1.5"/"2" 或自定义）。
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-public (pref-retina-factor) "retina-factor")
+(define-public (pref-retina-zoom) "retina-zoom")
+(define-public (pref-retina-icons) "retina-icons")
+(define-public (pref-retina-scale) "retina-scale")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ParagraphFormat（格式 → 段落 / 文档 → 段落）
 ;; 权威定义：paragraph-format-widgets.scm 的 paragraph-basic-fields /
 ;; paragraph-advanced-fields 的 specs builder（get-env / get-init 读写）。

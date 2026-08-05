@@ -12,20 +12,3 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (texmacs-module (texmacs menus view-tools) (:use (texmacs menus view-widgets)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Retina settings tool
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(tm-tool* (retina-settings-tool win)
-  (:name (if (os-macos?) "Retina screen settings" "High resolution screen settings")
-  ) ;:name
-  (dynamic (retina-settings-widget (lambda (answer)
-                                     (when (== answer "ok")
-                                       (notify-restart)
-                                     ) ;when
-                                     (tool-close :any 'retina-settings-tool #f win)
-                                   ) ;lambda
-           ) ;retina-settings-widget
-  ) ;dynamic
-) ;tm-tool*
